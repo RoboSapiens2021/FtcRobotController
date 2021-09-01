@@ -7,10 +7,14 @@ public final class Constants {
     public enum WHEEL_NAME {
         FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT;
     }
-
-    public static final double COUNTS_PER_MOTOR_REV = 1440D;
-    public static final double DRIVE_GEAR_REDUCTION = 1.0D;
-    public static final double WHEEL_DIAMETER_INCHES = 4.0D;
+/*
+Notes:
+       https://learnroadrunner.com/drive-constants.html#ticks-per-rev-max-rpm
+        https://www.gobilda.com/strafer-chassis-kit-v4/
+ */
+    public static final double COUNTS_PER_MOTOR_REV = 537.7D;
+    public static final double DRIVE_GEAR_REDUCTION = 19.2D;
+    public static final double WHEEL_DIAMETER_INCHES = 3.77953D;
     public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
     public static final double DRIVE_SPEED = 0.6D;
