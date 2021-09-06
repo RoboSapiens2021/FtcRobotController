@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drivetrain.DriveTrain;
-import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.util.DriveConstants;
 
 
 @Autonomous(name = "Demo Auto w Encoder")
@@ -19,28 +19,28 @@ public class DemoAutoWEncoder extends LinearOpMode {
         DriveTrain driveTrain = appContext.getDriveTrain();
 
         // Go in a square
-        driveTrain.drive(Constants.DRIVE_SPEED, 15, 15, 5.0);
-        driveTrain.drive(Constants.TURN_SPEED, 10, -10, 4.0);
+        driveTrain.drive(DriveConstants.DRIVE_SPEED, 15, 15, 5.0);
+        driveTrain.drive(DriveConstants.TURN_SPEED, 10, -10, 4.0);
 
-        driveTrain.drive(Constants.DRIVE_SPEED, 15, 15, 5.0);
-        driveTrain.drive(Constants.TURN_SPEED, 10, -10, 4.0);
+        driveTrain.drive(DriveConstants.DRIVE_SPEED, 15, 15, 5.0);
+        driveTrain.drive(DriveConstants.TURN_SPEED, 10, -10, 4.0);
 
-        driveTrain.drive(Constants.DRIVE_SPEED, 15, 15, 5.0);
-        driveTrain.drive(Constants.TURN_SPEED, 10, -10, 4.0);
+        driveTrain.drive(DriveConstants.DRIVE_SPEED, 15, 15, 5.0);
+        driveTrain.drive(DriveConstants.TURN_SPEED, 10, -10, 4.0);
 
-        driveTrain.drive(Constants.DRIVE_SPEED, 15, 15, 5.0);
-        driveTrain.drive(Constants.TURN_SPEED, -10, 10, 4.0);
+        driveTrain.drive(DriveConstants.DRIVE_SPEED, 15, 15, 5.0);
+        driveTrain.drive(DriveConstants.TURN_SPEED, -10, 10, 4.0);
 
-        driveTrain.drive(Constants.DRIVE_SPEED, 15, 15, 5.0);
-        driveTrain.drive(Constants.TURN_SPEED, -10, 10, 4.0);
+        driveTrain.drive(DriveConstants.DRIVE_SPEED, 15, 15, 5.0);
+        driveTrain.drive(DriveConstants.TURN_SPEED, -10, 10, 4.0);
 
-        driveTrain.drive(Constants.DRIVE_SPEED, 15, 15, 5.0);
-        driveTrain.drive(Constants.TURN_SPEED, -10, 10, 4.0);
+        driveTrain.drive(DriveConstants.DRIVE_SPEED, 15, 15, 5.0);
+        driveTrain.drive(DriveConstants.TURN_SPEED, -10, 10, 4.0);
 
-        driveTrain.drive(Constants.DRIVE_SPEED, 15, 15, 5.0);
-        driveTrain.drive(Constants.TURN_SPEED, -10, 10, 4.0);
+        driveTrain.drive(DriveConstants.DRIVE_SPEED, 15, 15, 5.0);
+        driveTrain.drive(DriveConstants.TURN_SPEED, -10, 10, 4.0);
 
-        driveTrain.drive(Constants.DRIVE_SPEED, 15, 15, 5.0);
+        driveTrain.drive(DriveConstants.DRIVE_SPEED, 15, 15, 5.0);
 
 
         // Spin in a circle

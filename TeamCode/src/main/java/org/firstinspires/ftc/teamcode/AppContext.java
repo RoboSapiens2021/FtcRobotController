@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.drivetrain.DriveTrain;
-import org.firstinspires.ftc.teamcode.drivetrain.FourWheelDrive;
-import org.firstinspires.ftc.teamcode.measure.Imu;
-import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.drivetrain.FourWheelMacanumDrive;
+import org.firstinspires.ftc.teamcode.drivetrain.Imu;
+import org.firstinspires.ftc.teamcode.util.DriveConstants;
 import org.firstinspires.ftc.teamcode.util.Logger;
 
 public class AppContext {
@@ -16,6 +16,7 @@ public class AppContext {
     private LinearOpMode opMode;
     private DriveTrain driveTrain;
     private Imu imu;
+    private VoltageSensor batteryVoltageSensor;
 
     private AppContext() {
     }
@@ -32,22 +33,25 @@ public class AppContext {
         Logger logger = Logger.getInstance();
         logger.setTelemetry(opMode.telemetry);
 
+        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
+
         //IMU Initialization
-        BNO055IMU bno055IMU = opMode.hardwareMap.get(BNO055IMU.class, "imu");
-        imu = new Imu(bno055IMU);
+        imu = new Imu(opMode.hardwareMap);
         imu.init();
 
-        DcMotor frontLeft = opMode.hardwareMap.dcMotor.get(Constants.WHEEL_NAME.FRONT_LEFT.name());
-        DcMotor frontRight = opMode.hardwareMap.dcMotor.get(Constants.WHEEL_NAME.FRONT_RIGHT.name());
-        DcMotor backLeft = opMode.hardwareMap.dcMotor.get(Constants.WHEEL_NAME.BACK_LEFT.name());
-        DcMotor backRight = opMode.hardwareMap.dcMotor.get(Constants.WHEEL_NAME.BACK_RIGHT.name());
+        DcMotorEx motorLeftFront = opMode.hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.LEFT_FRONT.name());
+        DcMotorEx motorLeftRear = opMode.hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.LEFT_REAR.name());
+        DcMotorEx motorRightRear = opMode.hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.RIGHT_REAR.name());
+        DcMotorEx motorRightFront = opMode.hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.RIGHT_FRONT.name());
 
-        FourWheelDrive fourWheelDrive = new FourWheelDrive(frontLeft, frontRight, backLeft, backRight);
-        fourWheelDrive.setImu(imu);
-        fourWheelDrive.init();
-        fourWheelDrive.reset();
+        FourWheelMacanumDrive fourWheelMacanumDrive = new FourWheelMacanumDrive(motorLeftFront, motorLeftRear, motorRightRear, motorRightFront);
+        fourWheelMacanumDrive.setBatteryVoltageSensor(batteryVoltageSensor);
+        fourWheelMacanumDrive.setImu(imu);
 
-        this.driveTrain = fourWheelDrive;
+        fourWheelMacanumDrive.init();
+        fourWheelMacanumDrive.reset();
+
+        this.driveTrain = fourWheelMacanumDrive;
 
         opMode.waitForStart();
     }

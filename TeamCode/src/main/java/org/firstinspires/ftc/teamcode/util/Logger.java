@@ -36,4 +36,23 @@ public class Logger implements Log {
         }
     }
 
+    public void log(String format, Object... args) {
+        if (null == telemetry) {
+            System.out.println(String.format(format, args));
+        } else {
+            telemetry.addLine(String.format(format, args));
+            telemetry.update();
+        }
+    }
+
+    @Override
+    public void log(Object message) {
+        if (null == telemetry) {
+            System.out.println(message);
+        } else {
+            telemetry.addLine(message.toString());
+            telemetry.update();
+        }
+    }
+
 }

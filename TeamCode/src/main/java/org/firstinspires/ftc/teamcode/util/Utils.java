@@ -8,4 +8,13 @@ public class Utils {
             Thread.currentThread().interrupt();
         }
     }
+
+    public static final double intToDouble(int x) {
+        return Integer.valueOf(x).doubleValue();
+    }
+
+    public static final int doubleToInt(double x) {
+        return Double.valueOf(x).intValue();
+    }
+
 }

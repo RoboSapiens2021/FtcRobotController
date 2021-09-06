@@ -18,20 +18,20 @@ public class ImuExample extends LinearOpMode {
         DriveTrain driveTrain = appContext.getDriveTrain();
 
         driveTrain.driveStraight(1, 500);
-        driveTrain.turnLeft(92);
+        driveTrain.turn(92);
         driveTrain.driveStraight(1, 1100);
-        driveTrain.turnRight(0);
+        driveTrain.turn(0);
         driveTrain.driveStraight(1, 1100);
-        driveTrain.turnRight(-25);
+        driveTrain.turn(-25);
         driveTrain.driveStraight(1, 1200);
 
-        driveTrain.turnLeft(0);
+        driveTrain.turn(0);
         driveTrain.driveStraight(-1, 1864);
-        driveTrain.turnRight(-90);
+        driveTrain.turn(-90);
         driveTrain.driveStraight(1, 1100);
-        driveTrain.turnLeft(0);
+        driveTrain.turn(0);
         driveTrain.driveStraight(1, 1100);
-        driveTrain.turnLeft(25);
+        driveTrain.turn(25);
         driveTrain.driveStraight(1, 1200);
 
     }

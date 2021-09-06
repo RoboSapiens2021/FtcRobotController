@@ -1,51 +1,66 @@
 package org.firstinspires.ftc.teamcode.drivetrain;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import static org.firstinspires.ftc.teamcode.util.DriveConstants.encoderTicksToInches;
+
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.teamcode.AppContext;
-import org.firstinspires.ftc.teamcode.measure.Imu;
-import org.firstinspires.ftc.teamcode.util.Constants;
+import org.firstinspires.ftc.teamcode.util.DriveConstants;
+import org.firstinspires.ftc.teamcode.util.Log;
+import org.firstinspires.ftc.teamcode.util.Logger;
+import org.firstinspires.ftc.teamcode.util.Utils;
 
 public abstract class AbstractDriveTrain implements DriveTrain {
-    private Imu imu;
+    private static final Log LOG = Logger.getInstance();
+
+    protected Imu imu;
+    protected VoltageSensor batteryVoltageSensor;
 
     public void setImu(Imu imu) {
         this.imu = imu;
     }
 
-    public Imu getImu() {
-        return imu;
+    public void setBatteryVoltageSensor(VoltageSensor batteryVoltageSensor) {
+        this.batteryVoltageSensor = batteryVoltageSensor;
     }
 
-    public void setDirection(DcMotor motor, DcMotor.Direction direction) {
+    public void setDirection(DcMotorEx motor, DcMotorEx.Direction direction) {
         if (motor != null) {
             motor.setDirection(direction);
         }
     }
 
-    public void setZeroPowerBehavior(DcMotor motor, DcMotor.ZeroPowerBehavior powerBehavior) {
+    public void setZeroPowerBehavior(DcMotorEx motor, DcMotorEx.ZeroPowerBehavior powerBehavior) {
         if (motor != null) {
             motor.setZeroPowerBehavior(powerBehavior);
         }
     }
 
-    public void setMode(DcMotor motor, DcMotor.RunMode runMode) {
+    public void setMode(DcMotorEx motor, DcMotorEx.RunMode runMode) {
         if (motor != null) {
             motor.setMode(runMode);
         }
     }
 
-    public void setTargetPosition(DcMotor motor, int targetPosition) {
-        motor.setTargetPosition(targetPosition);
+    public void setPIDFCoefficients(DcMotorEx motor, DcMotorEx.RunMode runMode, PIDFCoefficients coefficients) {
+        PIDFCoefficients compensatedCoefficients = new PIDFCoefficients(coefficients.p, coefficients.i, coefficients.d,
+                coefficients.f * 12 / batteryVoltageSensor.getVoltage());
+
+        motor.setPIDFCoefficients(runMode, compensatedCoefficients);
+    }
+
+    public void setTargetTickPosition(DcMotorEx motor, double targetPositionInTicks) {
+        motor.setTargetPosition(Utils.doubleToInt(targetPositionInTicks));
     }
 
     @Override
-    public void stopMotor(DcMotor motor) {
-        setPower(motor, Constants.ZERO_POWER);
+    public void stopMotor(DcMotorEx motor) {
+        setMotorPower(motor, DriveConstants.ZERO_POWER);
     }
 
-    @Override
-    public void setPower(DcMotor motor, double power) {
+    public void setMotorPower(DcMotorEx motor, double power) {
         motor.setPower(power);
     }
 
@@ -55,5 +70,13 @@ public abstract class AbstractDriveTrain implements DriveTrain {
 
     public boolean isStopRequested() {
         return AppContext.getInstance().isStopRequested();
+    }
+
+    public double getWheelPosition(DcMotorEx motor) {
+        return encoderTicksToInches(motor.getCurrentPosition());
+    }
+
+    public double getWheelVelocity(DcMotorEx motor) {
+        return encoderTicksToInches(motor.getVelocity());
     }
 }

@@ -1,23 +1,23 @@
 package org.firstinspires.ftc.teamcode.drivetrain;
 
-import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 public interface DriveTrain {
     void init();
 
     void reset();
 
-    void setDirection(DcMotor motor, DcMotor.Direction direction);
+    void setDirection(DcMotorEx motor, DcMotorEx.Direction direction);
 
-    void setZeroPowerBehavior(DcMotor motor, DcMotor.ZeroPowerBehavior powerBehavior);
+    void setZeroPowerBehavior(DcMotorEx motor, DcMotorEx.ZeroPowerBehavior powerBehavior);
 
-    void setMode(DcMotor motor, DcMotor.RunMode runMode);
+    void setMode(DcMotorEx motor, DcMotorEx.RunMode runMode);
 
-    void stopMotor(DcMotor motor);
+    void stopMotor(DcMotorEx motor);
 
-    void setPower(DcMotor motor, double power);
+    void setMotorPowers(double v1, double v2, double v3, double v4);
 
-    void setTargetPosition(DcMotor motor, int targetPosition);
+    void setTargetTickPosition(DcMotorEx motor, double targetPosition);
 
     void driveByTime(double power, long time);
 
@@ -25,8 +25,6 @@ public interface DriveTrain {
 
     void drive(double speed, double leftInches, double rightInches, double timeout);
 
-    void turnRight(int degrees);
-
-    void turnLeft(int degrees);
+    void turn(int degrees);
 
 }
