@@ -1,12 +1,13 @@
 package org.firstinspires.ftc.teamcode.test;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.util.DriveConstants;
+import org.firstinspires.ftc.teamcode.util.Utils;
 
 /**
  * This is a simple teleop routine for debugging your motor configuration.
@@ -36,8 +37,7 @@ import org.firstinspires.ftc.teamcode.util.DriveConstants;
  * <p>
  * Uncomment the @Disabled tag below to use this opmode.
  */
-@Disabled
-@TeleOp(group = "drive")
+@TeleOp(group = "test")
 public class MotorDirectionDebugger extends LinearOpMode {
     public static double MOTOR_POWER = 0.7;
 
@@ -47,6 +47,11 @@ public class MotorDirectionDebugger extends LinearOpMode {
         DcMotorEx motorLeftRear = hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.LEFT_REAR.name());
         DcMotorEx motorRightRear = hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.RIGHT_REAR.name());
         DcMotorEx motorRightFront = hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.RIGHT_FRONT.name());
+
+        motorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorLeftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorRightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         telemetry.addLine("Press play to begin the debugging opmode");
         telemetry.update();
@@ -59,34 +64,52 @@ public class MotorDirectionDebugger extends LinearOpMode {
         telemetry.setDisplayFormat(Telemetry.DisplayFormat.HTML);
 
         while (!isStopRequested()) {
-            telemetry.addLine("Press each button to turn on its respective motor");
-            telemetry.addLine();
-            telemetry.addLine("<font face=\"monospace\">Xbox/PS4 Button - Motor</font>");
-            telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;X / ▢&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Front Left</font>");
-            telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;Y / Δ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Front Right</font>");
-            telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;B / O&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Rear&nbsp;&nbsp;Right</font>");
-            telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;A / X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Rear&nbsp;&nbsp;Left</font>");
-            telemetry.addLine();
+            motorLeftFront.setPower(MOTOR_POWER);
+            Utils.sleep(2000);
+            motorLeftFront.setPower(0);
 
-            if (gamepad1.x) {
-                motorLeftFront.setPower(MOTOR_POWER);
-                telemetry.addLine("Running Motor: Front Left");
-            } else if (gamepad1.y) {
-                motorRightFront.setPower(MOTOR_POWER);
-                telemetry.addLine("Running Motor: Front Right");
-            } else if (gamepad1.b) {
-                motorRightRear.setPower(MOTOR_POWER);
-                telemetry.addLine("Running Motor: Rear Right");
-            } else if (gamepad1.a) {
-                motorLeftRear.setPower(MOTOR_POWER);
-                telemetry.addLine("Running Motor: Rear Left");
-            } else {
-                motorLeftFront.setPower(MOTOR_POWER);
-                motorLeftRear.setPower(MOTOR_POWER);
-                motorRightRear.setPower(MOTOR_POWER);
-                motorRightFront.setPower(MOTOR_POWER);
-                telemetry.addLine("Running Motor: None");
-            }
+            motorLeftRear.setPower(MOTOR_POWER);
+            Utils.sleep(2000);
+            motorLeftRear.setPower(0);
+
+            motorRightRear.setDirection(DcMotor.Direction.REVERSE);
+            motorRightRear.setPower(MOTOR_POWER);
+            Utils.sleep(2000);
+            motorRightRear.setPower(0);
+
+            motorRightFront.setDirection(DcMotor.Direction.REVERSE);
+            motorRightFront.setPower(MOTOR_POWER);
+            Utils.sleep(2000);
+            motorRightFront.setPower(0);
+
+//            telemetry.addLine("Press each button to turn on its respective motor");
+//            telemetry.addLine();
+//            telemetry.addLine("<font face=\"monospace\">Xbox/PS4 Button - Motor</font>");
+//            telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;X / ▢&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Front Left</font>");
+//            telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;Y / Δ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Front Right</font>");
+//            telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;B / O&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Rear&nbsp;&nbsp;Right</font>");
+//            telemetry.addLine("<font face=\"monospace\">&nbsp;&nbsp;A / X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- Rear&nbsp;&nbsp;Left</font>");
+//            telemetry.addLine();
+//
+//            if (gamepad1.x) {
+//                motorLeftFront.setPower(MOTOR_POWER);
+//                telemetry.addLine("Running Motor: Front Left");
+//            } else if (gamepad1.y) {
+//                motorRightFront.setPower(MOTOR_POWER);
+//                telemetry.addLine("Running Motor: Front Right");
+//            } else if (gamepad1.b) {
+//                motorRightRear.setPower(MOTOR_POWER);
+//                telemetry.addLine("Running Motor: Rear Right");
+//            } else if (gamepad1.a) {
+//                motorLeftRear.setPower(MOTOR_POWER);
+//                telemetry.addLine("Running Motor: Rear Left");
+//            } else {
+//                motorLeftFront.setPower(MOTOR_POWER);
+//                motorLeftRear.setPower(MOTOR_POWER);
+//                motorRightRear.setPower(MOTOR_POWER);
+//                motorRightFront.setPower(MOTOR_POWER);
+//                telemetry.addLine("Running Motor: None");
+//            }
 
             telemetry.update();
         }

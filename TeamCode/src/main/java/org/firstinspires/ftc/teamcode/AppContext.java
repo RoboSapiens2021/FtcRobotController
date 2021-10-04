@@ -32,12 +32,12 @@ public class AppContext {
     public void init() {
         Logger logger = Logger.getInstance();
         logger.setTelemetry(opMode.telemetry);
-
-        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
-
-        //IMU Initialization
-        imu = new Imu(opMode.hardwareMap);
-        imu.init();
+//
+//        batteryVoltageSensor = opMode.hardwareMap.voltageSensor.iterator().next();
+//
+//        //IMU Initialization
+//        imu = new Imu(opMode.hardwareMap);
+//        imu.init();
 
         DcMotorEx motorLeftFront = opMode.hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.LEFT_FRONT.name());
         DcMotorEx motorLeftRear = opMode.hardwareMap.get(DcMotorEx.class, DriveConstants.WHEEL_NAME.LEFT_REAR.name());
@@ -49,7 +49,7 @@ public class AppContext {
         fourWheelMacanumDrive.setImu(imu);
 
         fourWheelMacanumDrive.init();
-        fourWheelMacanumDrive.reset();
+//        fourWheelMacanumDrive.reset();
 
         this.driveTrain = fourWheelMacanumDrive;
 

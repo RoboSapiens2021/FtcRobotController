@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.drivetrain.DriveTrain;
 /*
  * This is a simple routine to test turning capabilities.
  */
-@Autonomous(group = "drive")
+@Autonomous(group = "test")
 public class TurnTest extends LinearOpMode {
     public static int ANGLE = 90; // deg
 

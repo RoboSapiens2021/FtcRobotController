@@ -23,7 +23,7 @@ public final class DriveConstants {
      * Set this flag to false if drive encoders are not present and an alternative localization
      * method is in use (e.g., tracking wheels).
      */
-    public static final boolean RUN_USING_ENCODER = true;
+    public static final boolean RUN_USING_ENCODER = false;
 
     /*
      * These are motor constants that should be listed online for your motors.

@@ -45,9 +45,9 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
         setDirection(motorRightFront, DcMotor.Direction.REVERSE);
 
         for (DcMotorEx motor : motors) {
-            MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
-            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
-            motor.setMotorType(motorConfigurationType);
+//            MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
+//            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+//            motor.setMotorType(motorConfigurationType);
 
             setZeroPowerBehavior(motor, DcMotor.ZeroPowerBehavior.BRAKE);
 
