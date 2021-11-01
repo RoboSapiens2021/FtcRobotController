@@ -1,14 +1,12 @@
-package org.firstinspires.ftc.teamcode.drivetrain;
+package org.firstinspires.ftc.teamcode.motor;
 
-import static org.firstinspires.ftc.teamcode.util.DriveConstants.MOTOR_VELO_PID;
-import static org.firstinspires.ftc.teamcode.util.DriveConstants.RUN_USING_ENCODER;
+import static org.firstinspires.ftc.teamcode.util.Constants.run_using_encoder;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.util.DriveConstants;
+import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.Log;
 import org.firstinspires.ftc.teamcode.util.Logger;
 import org.firstinspires.ftc.teamcode.util.Utils;
@@ -40,8 +38,9 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
     }
 
     public void init() {
-
-        setDirection(motorRightRear, DcMotor.Direction.REVERSE);
+//        setDirection(motorLeftFront, DcMotor.Direction.REVERSE);
+//        setDirection(motorLeftRear, DcMotor.Direction.REVERSE);
+//        setDirection(motorRightRear, DcMotor.Direction.REVERSE);
         setDirection(motorRightFront, DcMotor.Direction.REVERSE);
 
         for (DcMotorEx motor : motors) {
@@ -51,23 +50,25 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
 
             setZeroPowerBehavior(motor, DcMotor.ZeroPowerBehavior.BRAKE);
 
-            if (RUN_USING_ENCODER) {
+            if (run_using_encoder) {
                 setMode(motor, DcMotor.RunMode.RUN_USING_ENCODER);
             }
 
-            if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
-                setPIDFCoefficients(motor, DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
-            }
+//            if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
+//                setPIDFCoefficients(motor, DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
+//            }
 
         }
 
     }
 
     public void reset() {
-        LOG.log(Logger.CAPTION.Status, "Resetting Wheel Encoders");
+        if (run_using_encoder) {
+            LOG.info("Resetting Wheel Encoders");
 
-        for (DcMotorEx motor : motors) {
-            setMode(motor, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            for (DcMotorEx motor : motors) {
+                setMode(motor, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            }
         }
 
         logPosition();
@@ -102,6 +103,7 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
             setMotorPower(motor, power);
         }
     }
+
     private void stopMotors() {
         for (DcMotorEx motor : motors) {
             stopMotor(motor);
@@ -119,7 +121,7 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
 
         Utils.sleep(time);
 
-        setMotorPowers(DriveConstants.ZERO_POWER);
+        setMotorPowers(Constants.ZERO_POWER);
     }
 
     public void driveStraight(double power, long time) {
@@ -127,8 +129,8 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
     }
 
     public void turn(int degrees) {
-        float angularOrientation = imu.getAngularOrientation();
-        LOG.log(Log.CAPTION.Position, angularOrientation);
+        float angularOrientation = imu.getCurrentPosition();
+        LOG.debug(angularOrientation);
 
         Utils.sleep(500);
 
@@ -139,10 +141,14 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
         motorRightRear.setPower(0.2);
 
         while (angularOrientation < degrees && !isStopRequested()) {
-            angularOrientation = imu.getAngularOrientation();
-            LOG.log(Log.CAPTION.Position, angularOrientation);
+            angularOrientation = imu.getCurrentPosition();
+            LOG.debug(angularOrientation);
         }
         stopMotors();
+    }
+
+    public void strafeRight() {
+
     }
 
     public void drive(double speed, double leftInches, double rightInches, double timeout) {
@@ -158,10 +164,10 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
         if (isOpModeActive()) {
 
             // Determine new target position, and pass to motor controller
-            newLeftFrontTarget = Utils.intToDouble(motorLeftFront.getCurrentPosition()) + DriveConstants.inchesToEncoderTicks(leftInches);
-            newLeftRearTarget = Utils.intToDouble(motorLeftRear.getCurrentPosition()) + DriveConstants.inchesToEncoderTicks(leftInches);
-            newRightRearTarget = Utils.intToDouble(motorRightRear.getCurrentPosition()) + DriveConstants.inchesToEncoderTicks(rightInches);
-            newRightFrontTarget = Utils.intToDouble(motorRightFront.getCurrentPosition()) + DriveConstants.inchesToEncoderTicks(rightInches);
+            newLeftFrontTarget = Utils.intToDouble(motorLeftFront.getCurrentPosition()) + Constants.inchesToEncoderTicks(leftInches);
+            newLeftRearTarget = Utils.intToDouble(motorLeftRear.getCurrentPosition()) + Constants.inchesToEncoderTicks(leftInches);
+            newRightRearTarget = Utils.intToDouble(motorRightRear.getCurrentPosition()) + Constants.inchesToEncoderTicks(rightInches);
+            newRightFrontTarget = Utils.intToDouble(motorRightFront.getCurrentPosition()) + Constants.inchesToEncoderTicks(rightInches);
 
             setTargetTickPosition(motorLeftFront, newLeftFrontTarget);
             setTargetTickPosition(motorLeftRear, newLeftRearTarget);
@@ -174,14 +180,14 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
             // reset the timeout time and start motion.
             runtime.reset();
             setMotorPowers(speed);
-            LOG.log(Logger.CAPTION.Position, "Running to %7d", newLeftFrontTarget);
+            LOG.debug(String.format("Running to %7f", newLeftFrontTarget));
 
             while (isOpModeActive()
                     && (runtime.seconds() < timeout)
                     && (motorLeftRear.isBusy() && motorRightRear.isBusy())) {
 
                 // Display it for the driver.
-                LOG.log(Logger.CAPTION.Position, "Running to %7d", motorLeftFront.getCurrentPosition());
+                LOG.debug(String.format("Running to %7d", motorLeftFront.getCurrentPosition()));
             }
 
             // Stop all motion;
@@ -193,6 +199,6 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
     }
 
     public void logPosition() {
-        LOG.log(Logger.CAPTION.Position, "Starting at %7d :%7d", motorLeftRear.getCurrentPosition(), motorRightRear.getCurrentPosition());
+        LOG.debug(String.format("Starting at %7d :%7d", motorLeftRear.getCurrentPosition(), motorRightRear.getCurrentPosition()));
     }
 }

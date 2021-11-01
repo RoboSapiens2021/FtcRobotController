@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drivetrain;
+package org.firstinspires.ftc.teamcode.motor;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 

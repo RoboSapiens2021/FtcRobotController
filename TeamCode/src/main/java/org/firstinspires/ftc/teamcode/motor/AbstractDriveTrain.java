@@ -1,13 +1,14 @@
-package org.firstinspires.ftc.teamcode.drivetrain;
+package org.firstinspires.ftc.teamcode.motor;
 
-import static org.firstinspires.ftc.teamcode.util.DriveConstants.encoderTicksToInches;
+import static org.firstinspires.ftc.teamcode.util.Constants.encoderTicksToInches;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 
-import org.firstinspires.ftc.teamcode.AppContext;
-import org.firstinspires.ftc.teamcode.util.DriveConstants;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.sensors.InertialMotionUnit;
+import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.Log;
 import org.firstinspires.ftc.teamcode.util.Logger;
 import org.firstinspires.ftc.teamcode.util.Utils;
@@ -15,10 +16,10 @@ import org.firstinspires.ftc.teamcode.util.Utils;
 public abstract class AbstractDriveTrain implements DriveTrain {
     private static final Log LOG = Logger.getInstance();
 
-    protected Imu imu;
+    protected InertialMotionUnit imu;
     protected VoltageSensor batteryVoltageSensor;
 
-    public void setImu(Imu imu) {
+    public void setImu(InertialMotionUnit imu) {
         this.imu = imu;
     }
 
@@ -57,7 +58,7 @@ public abstract class AbstractDriveTrain implements DriveTrain {
 
     @Override
     public void stopMotor(DcMotorEx motor) {
-        setMotorPower(motor, DriveConstants.ZERO_POWER);
+        setMotorPower(motor, Constants.ZERO_POWER);
     }
 
     public void setMotorPower(DcMotorEx motor, double power) {
@@ -65,11 +66,11 @@ public abstract class AbstractDriveTrain implements DriveTrain {
     }
 
     public boolean isOpModeActive() {
-        return AppContext.getInstance().isOpModeActive();
+        return Robot.getInstance().isOpModeActive();
     }
 
     public boolean isStopRequested() {
-        return AppContext.getInstance().isStopRequested();
+        return Robot.getInstance().isStopRequested();
     }
 
     public double getWheelPosition(DcMotorEx motor) {

@@ -2,28 +2,37 @@ package org.firstinspires.ftc.teamcode.util;
 
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 
+import org.firstinspires.ftc.teamcode.camera.opencv.BoxAroundPipeline;
+import org.openftc.easyopencv.OpenCvPipeline;
+
 /*
 Notes:
        https://learnroadrunner.com/drive-constants.html#ticks-per-rev-max-rpm
         https://www.gobilda.com/strafer-chassis-kit-v4/
  */
-public final class DriveConstants {
-    private DriveConstants() {
+public final class Constants {
+    private Constants() {
     }
 
     // TODO: adjust the names of the following hardware devices to match your configuration
     public enum WHEEL_NAME {
-        LEFT_FRONT, LEFT_REAR, RIGHT_REAR, RIGHT_FRONT;
+        LEFT_FRONT, LEFT_REAR, RIGHT_REAR, RIGHT_FRONT, SPINNER;
     }
 
-    public static final String DEVICE_NAME_IMU = "imu";
+    public enum DEVICE_NAME {
+        imu, COLOR_SENSOR, WEBCAM
+    }
 
     /*
      * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
      * Set this flag to false if drive encoders are not present and an alternative localization
      * method is in use (e.g., tracking wheels).
      */
-    public static final boolean RUN_USING_ENCODER = false;
+    public static final boolean run_using_encoder = false;
+    public static final boolean camera_live_preview = true;
+    public static final boolean use_webcam = true;
+    public static final Log.LEVEL logLevel = Log.LEVEL.DEBUG;
+    public static final OpenCvPipeline pipeline = new BoxAroundPipeline();
 
     /*
      * These are motor constants that should be listed online for your motors.
@@ -42,7 +51,7 @@ public final class DriveConstants {
     public static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_INCHES * Math.PI);
     public static final double INCH_PER_TICK = 1 / TICKS_PER_INCH;
 
-    public static final double DRIVE_SPEED = 0.6D;
+    public static final double DRIVE_SPEED = 0.3D;
     public static final double TURN_SPEED = 0.5D;
     public static final double ZERO_POWER = 0.0D;
 

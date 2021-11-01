@@ -1,21 +1,21 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.test.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drivetrain.DriveTrain;
+import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.motor.DriveTrain;
 
-@Autonomous(name = "ImuExample")
-
+@Autonomous(name = "ImuExample", group = "test")
 public class ImuExample extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        AppContext appContext = AppContext.getInstance();
-        appContext.setOpMode(this);
-        appContext.init();
+        Robot robot = Robot.getInstance();
+        robot.setOpMode(this);
+        robot.init();
 
-        DriveTrain driveTrain = appContext.getDriveTrain();
+        DriveTrain driveTrain = robot.configureDriveTrain();
 
         driveTrain.driveStraight(1, 500);
         driveTrain.turn(92);

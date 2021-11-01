@@ -1,16 +1,28 @@
 package org.firstinspires.ftc.teamcode.util;
 
 public interface Log {
-    enum CAPTION {
-        Status, Position
+    enum LEVEL {
+        INFO, WARN, ERROR, DEBUG, TRACE
     }
 
-    void log(Logger.CAPTION caption, String format, Object... args);
+    boolean isInfoEnabled();
 
-    void log(Logger.CAPTION caption, Object message);
+    boolean isDebugEnabled();
 
-    void log(String format, Object... args);
+    boolean isErrorEnabled();
 
-    void log(Object message);
+    boolean isWarnEnabled();
+
+    boolean isTraceEnabled();
+
+    void info(Object message);
+
+    void error(Object message);
+
+    void debug(Object message);
+
+    void warn(Object message);
+
+    void trace(Object message);
 
 }
