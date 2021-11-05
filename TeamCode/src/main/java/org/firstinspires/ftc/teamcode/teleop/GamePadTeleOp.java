@@ -31,10 +31,10 @@ package org.firstinspires.ftc.teamcode.teleop;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.motor.DriveTrain;
-import org.firstinspires.ftc.teamcode.util.Logger;
+import org.firstinspires.ftc.teamcode.motor.FourWheelMacanumDrive;
 
 @TeleOp(name = "GamePadTeleOp", group = "TeleOp")
 /**
@@ -44,41 +44,33 @@ public class GamePadTeleOp extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
         Robot robot = Robot.getInstance();
         robot.setOpMode(this);
         robot.init();
 
-        Logger logger = Logger.getInstance();
-        logger.debug("Gamepad1 User" + gamepad1.getUser());
-        logger.debug("Gamepad2 User " + gamepad2.getUser());
-        GameController gameController = new GameController(robot.getSpinner());
-
         // run until the end of the match (driver presses STOP)
-        DriveTrain driveTrain = robot.configureDriveTrain();
+        FourWheelMacanumDrive driveTrain = robot.getDriveTrain();
+        driveTrain.setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
 
         while (opModeIsActive()) {
-            double[] motorPower = getMotorPower();
-            driveTrain.setMotorPowers(motorPower[0], motorPower[1], motorPower[2], motorPower[3]);
-            gameController.turnSpinner(gamepad1.right_trigger - gamepad1.left_trigger);
+            driveTrain.fieldDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+
+            float triggerDiff = (gamepad1.left_trigger - gamepad1.right_trigger) / 2;
+
+            if (triggerDiff > 0.0F) {
+                Robot.getInstance().getSpinner().spin(triggerDiff);
+            } else {
+                Robot.getInstance().getSpinner().spin(-triggerDiff);
+            }
+
+            if (gamepad1.y) {
+                Robot.getInstance().getImu().resetPosition();
+            }
         }
     }
 
-    private double[] getMotorPower() {
-        double r = Math.hypot(gamepad1.left_stick_x, gamepad1.left_stick_y);
-        double robotAngle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x) - (Math.PI / 4);
-        double rightX = gamepad1.right_stick_x;
-
-        double cosine = Math.cos(robotAngle);
-        double sine = Math.sin(robotAngle);
-
-        double[] motorPower = new double[4];
-        motorPower[0] = r * cosine + rightX;// lf
-        motorPower[1] = r * sine + rightX;//lr
-        motorPower[2] = r * cosine - rightX;//rr
-        motorPower[3] = r * sine - rightX;//rf
-
-        return motorPower;
-    }
 
 //    private double[] getMotorPower() {
 //        double y = -gamepad1.left_stick_y;

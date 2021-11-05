@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.util.Log;
 import org.firstinspires.ftc.teamcode.util.Logger;
 import org.firstinspires.ftc.teamcode.util.Utils;
 
-public abstract class AbstractDriveTrain implements DriveTrain {
+public abstract class AbstractDriveTrain {
     private static final Log LOG = Logger.getInstance();
 
     protected InertialMotionUnit imu;
@@ -56,7 +56,6 @@ public abstract class AbstractDriveTrain implements DriveTrain {
         motor.setTargetPosition(Utils.doubleToInt(targetPositionInTicks));
     }
 
-    @Override
     public void stopMotor(DcMotorEx motor) {
         setMotorPower(motor, Constants.ZERO_POWER);
     }

@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.camera.opencv.SkystoneDeterminationPipelin
 import org.firstinspires.ftc.teamcode.camera.opencv.StageSwitchingPipeline;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.Logger;
+import org.firstinspires.ftc.teamcode.util.RoboSwitches;
 import org.firstinspires.ftc.teamcode.util.Utils;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
@@ -42,7 +43,7 @@ public class CameraTest extends LinearOpMode {
         logger.debug("webcamName: " + webcamName);
 
         CameraTestListener cameraListener = new CameraTestListener();
-        OpenCvCamera camera = getExternalCamera(Constants.camera_live_preview);
+        OpenCvCamera camera = getExternalCamera(RoboSwitches.CAMERA_LIVE_PREVIEW);
 
         camera.setViewportRenderer(OpenCvCamera.ViewportRenderer.GPU_ACCELERATED);
         camera.openCameraDeviceAsync(cameraListener);

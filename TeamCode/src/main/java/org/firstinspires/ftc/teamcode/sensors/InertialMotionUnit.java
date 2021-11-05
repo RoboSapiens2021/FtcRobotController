@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.sensors;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -24,14 +25,15 @@ public class InertialMotionUnit {
         parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
 
-//        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
-//        parameters.accelerationIntegrationAlgorithm = new ImuAccelerationIntegrator();
+//        NaiveAccelerationIntegrator();
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
 
         bno055IMU.initialize(parameters);
         // Start the logging of measured acceleration
-//        bno055IMU.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+        bno055IMU.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
         return true;
     }
@@ -40,7 +42,7 @@ public class InertialMotionUnit {
         return "calib: " + bno055IMU.getCalibrationStatus().toString() + "status: " + bno055IMU.getSystemStatus().toShortString();
     }
 
-    public float getCurrentPosition() {
+    public float getAngle() {
         Orientation orientation = bno055IMU.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
         currentPosition = orientation.firstAngle;
 

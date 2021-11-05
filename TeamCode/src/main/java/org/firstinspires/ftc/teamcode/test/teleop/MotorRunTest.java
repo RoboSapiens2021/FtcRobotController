@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.util.Constants;
 
 @TeleOp(name = "MotorRunTest", group = "test")
 public class MotorRunTest extends LinearOpMode {
-    public static double MOTOR_POWER = 0.7;
+    public static double MOTOR_POWER = 0.1;
 
     @Override
     public void runOpMode() {

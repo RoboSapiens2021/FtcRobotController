@@ -12,6 +12,7 @@ public class Spinner {
 
     public void init() {
         motor.setZeroPowerBehavior( DcMotor.ZeroPowerBehavior.BRAKE);
+        motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     public void spin(double power) {

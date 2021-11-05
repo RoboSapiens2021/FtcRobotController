@@ -4,7 +4,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.motor.DriveTrain;
+import org.firstinspires.ftc.teamcode.motor.FourWheelMacanumDrive;
 
 /*
  * This is a simple routine to test turning capabilities.
@@ -19,12 +19,12 @@ public class TurnTest extends LinearOpMode {
         robot.setOpMode(this);
         robot.init();
 
-        DriveTrain drive = robot.configureDriveTrain();
+        FourWheelMacanumDrive driveTrain = robot.getDriveTrain();
 
         if (isStopRequested()) {
             return;
         }
 
-        drive.turn(ANGLE);
+        driveTrain.turn(ANGLE,0.8);
     }
 }

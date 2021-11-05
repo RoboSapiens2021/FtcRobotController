@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.Robot;
-import org.firstinspires.ftc.teamcode.motor.DriveTrain;
+import org.firstinspires.ftc.teamcode.motor.FourWheelMacanumDrive;
 
-@Autonomous(name="DriveByTime", group="test")
+@Autonomous(name = "DriveByTime", group = "test")
 public class DriveByTime extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -14,8 +14,10 @@ public class DriveByTime extends LinearOpMode {
         robot.setOpMode(this);
         robot.init();
 
-        DriveTrain driveTrain = robot.configureDriveTrain();
+        FourWheelMacanumDrive driveTrain = robot.getDriveTrain();
         driveTrain.driveByTime(0.5, 2000);
+        driveTrain.driveByTime(0.5, 1500);
+
     }
 
 }

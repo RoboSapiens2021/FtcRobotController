@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.motor;
 
-import static org.firstinspires.ftc.teamcode.util.Constants.run_using_encoder;
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
-import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.Log;
@@ -38,21 +36,21 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
     }
 
     public void init() {
-//        setDirection(motorLeftFront, DcMotor.Direction.REVERSE);
-//        setDirection(motorLeftRear, DcMotor.Direction.REVERSE);
+        setDirection(motorLeftFront, DcMotor.Direction.REVERSE);
+        setDirection(motorLeftRear, DcMotor.Direction.REVERSE);
 //        setDirection(motorRightRear, DcMotor.Direction.REVERSE);
-        setDirection(motorRightFront, DcMotor.Direction.REVERSE);
+//        setDirection(motorRightFront, DcMotor.Direction.REVERSE);
 
         for (DcMotorEx motor : motors) {
-//            MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
-//            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
-//            motor.setMotorType(motorConfigurationType);
+            //Motor encoders are set to 0.85 by default for safety
+            MotorConfigurationType motorConfigurationType = motor.getMotorType().clone();
+            //changing this to 1.0 can make you more vulnerable to changes in speed when your battery gets low, so make sure to use a PID
+            motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+            motor.setMotorType(motorConfigurationType);
 
             setZeroPowerBehavior(motor, DcMotor.ZeroPowerBehavior.BRAKE);
 
-            if (run_using_encoder) {
-                setMode(motor, DcMotor.RunMode.RUN_USING_ENCODER);
-            }
+            resetEncoder();
 
 //            if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
 //                setPIDFCoefficients(motor, DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
@@ -62,16 +60,11 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
 
     }
 
-    public void reset() {
-        if (run_using_encoder) {
-            LOG.info("Resetting Wheel Encoders");
 
-            for (DcMotorEx motor : motors) {
-                setMode(motor, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            }
+    public void resetEncoder() {
+        for (DcMotorEx motor : motors) {
+            setMode(motor, DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         }
-
-        logPosition();
     }
 
     public List<Double> getWheelPositions() {
@@ -90,7 +83,6 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
         return wheelVelocities;
     }
 
-    @Override
     public void setMotorPowers(double v1, double v2, double v3, double v4) {
         setMotorPower(motorLeftFront, v1);
         setMotorPower(motorLeftRear, v2);
@@ -110,7 +102,7 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
         }
     }
 
-    private void setMotorMode(DcMotor.RunMode runMode) {
+    public void setMotorMode(DcMotor.RunMode runMode) {
         for (DcMotorEx motor : motors) {
             setMode(motor, runMode);
         }
@@ -124,41 +116,130 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
         setMotorPowers(Constants.ZERO_POWER);
     }
 
-    public void driveStraight(double power, long time) {
-        driveByTime(power, time);
-    }
 
-    public void turn(int degrees) {
-        float angularOrientation = imu.getCurrentPosition();
-        LOG.debug(angularOrientation);
+    /**
+     * @param speed + to drive forward and - to drive backward
+     * @param time
+     */
+    public void strafeStraight(double speed, long time) {
+        float targetAngle = imu.getAngle();
+        long startTime = System.currentTimeMillis();
 
-        Utils.sleep(500);
+        while (isOpModeActive() && (System.currentTimeMillis() - startTime) < time) {
+            float currentAngle = imu.getAngle();
+            float angleDifference = currentAngle - targetAngle;
+            if (angleDifference < -180) {
+                angleDifference = angleDifference + 360;
+            } else if (angleDifference > 180) {
+                angleDifference = 360 - angleDifference;
+            }
 
-        motorLeftFront.setPower(-0.2);
-        motorLeftRear.setPower(-0.2);
-
-        motorRightFront.setPower(0.2);
-        motorRightRear.setPower(0.2);
-
-        while (angularOrientation < degrees && !isStopRequested()) {
-            angularOrientation = imu.getCurrentPosition();
-            LOG.debug(angularOrientation);
+            if (speed > 0D) { //Drive Forward
+                if (angleDifference > 1) { //if the robot is strafing right and needs to turn to the right, reduce the speed of the back motors
+                    setMotorPowers(speed, -speed + 0.2, speed - 0.2, -speed);
+                } else if (angleDifference < 1) {//if the robot is strafing right and needs to turn to the left, reduce the speed of the front motors
+                    setMotorPowers(speed - 0.2, -speed, speed, -speed + 0.2);
+                } else {
+                    setMotorPowers(speed);
+                }
+            } else {
+//                if (angleDifference < -1) {
+//                    setMotorPowers(speed, -speed + 0.2, speed - 0.2, -speed);
+//                } else if (angleDifference < 1) {
+//                    setMotorPowers(speed - 0.2, -speed, speed, -speed + 0.2);
+//                } else {
+//                    setMotorPowers(speed);
+//                }
+            }
         }
         stopMotors();
     }
 
-    public void strafeRight() {
+//    public void drive(float leftX, float leftY, float rightX) {
+////        double r = Math.hypot(leftX, leftY);
+////        double robotAngle = Math.atan2(-leftY, leftX) - (Math.PI / 4);
+////
+////        double cosine = Math.cos(robotAngle);
+////        double sine = Math.sin(robotAngle);
+////
+////        double frontLeft = r * sine + rightX;// lf
+////        double rearLeft = r * cosine + rightX;//lr
+////        double rearRight = r * sine - rightX;//rr
+////        double frontRight = r * cosine - rightX;//rf
+//
+//        double frontLeft = 1.0;
+//        double rearLeft = 1.0;
+//        double rearRight = 1.0;
+//        double frontRight = 1.0;
+//
+//        setMotorPowers(frontLeft, rearLeft, rearRight, frontRight);
+//    }
 
+    /**
+     * Field Oriented driving
+     *
+     * @param leftX
+     * @param leftY
+     * @param rightX
+     */
+    public void fieldDrive(float leftX, float leftY, float rightX) {
+//        The reason we multiply by the sqrt(2) is because the output of sine and cosine when going straight will be sqrt(2)/2. not 1.
+//        Multiplying by sqrt(2) will make the straight forward power 1, and while diagonal will be  >1
+        double r = Math.hypot(leftX, leftY) * Math.sqrt(2);//Magnitude
+
+//        float angle = imu.getAngle();
+
+//        TThe robot angle is not the angle of the robot is facing, It is the angle in which the robot needs to drive relative to its front,
+//        in order to drive at the field-relative angle specified by the driver
+//        double robotAngle = Math.atan2(leftY, leftX) - Math.toRadians(Utils.cvtDegrees(angle)) - 3 * (Math.PI / 4);
+        double robotAngle = Math.atan2(leftY, leftX) - 3 * (Math.PI / 4);
+
+        double cosine = Math.cos(robotAngle);
+        double sine = Math.sin(robotAngle);
+
+        double frontLeft = r * cosine + rightX;
+        double rearLeft = r * sine + rightX;
+        double rearRight = r * cosine - rightX;
+        double frontRight = r * sine - rightX;
+
+        double maxPower = Utils.max(frontLeft, rearLeft, rearRight, frontRight);
+
+        if (maxPower > Constants.MAX_SPEED) {
+            frontLeft /= maxPower * (1 / Constants.MAX_SPEED);
+            frontRight /= maxPower * (1 / Constants.MAX_SPEED);
+            rearLeft /= maxPower * (1 / Constants.MAX_SPEED);
+            rearRight /= maxPower * (1 / Constants.MAX_SPEED);
+        }
+
+        setMotorPowers(frontLeft, rearLeft, rearRight, frontRight);
     }
 
-    public void drive(double speed, double leftInches, double rightInches, double timeout) {
+    public void turn(int degrees, double sp) {
+
+        double speed = (degrees < 0) ? -1 * sp : sp;
+
+        motorLeftFront.setPower(-speed);
+        motorLeftRear.setPower(-speed);
+        motorRightFront.setPower(speed);
+        motorRightRear.setPower(speed);
+
+        while (imu.getAngle() < degrees && !isStopRequested()) {
+            //Ignore
+        }
+        stopMotors();
+    }
+
+
+    public void print(double inches) {
+        LOG.debug("CurrentPosition: " + motorLeftFront.getCurrentPosition() + "" + Constants.inchesToEncoderTicks(inches));
+    }
+
+    public void drive(double speed, double leftInches, double rightInches) {
         double newLeftRearTarget;
         double newRightRearTarget;
 
         double newLeftFrontTarget;
         double newRightFrontTarget;
-
-        ElapsedTime runtime = new ElapsedTime();
 
         // Ensure that the opmode is still active
         if (isOpModeActive()) {
@@ -177,28 +258,48 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
             // Turn On RUN_TO_POSITION
             setMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // reset the timeout time and start motion.
-            runtime.reset();
             setMotorPowers(speed);
             LOG.debug(String.format("Running to %7f", newLeftFrontTarget));
 
+            float targetAngle = imu.getAngle();
+
             while (isOpModeActive()
-                    && (runtime.seconds() < timeout)
                     && (motorLeftRear.isBusy() && motorRightRear.isBusy())) {
 
-                // Display it for the driver.
-                LOG.debug(String.format("Running to %7d", motorLeftFront.getCurrentPosition()));
+                angleCorrector(speed, targetAngle);
             }
 
             // Stop all motion;
             stopMotors();
-
-            // Turn off RUN_TO_POSITION
-            setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
     }
 
-    public void logPosition() {
-        LOG.debug(String.format("Starting at %7d :%7d", motorLeftRear.getCurrentPosition(), motorRightRear.getCurrentPosition()));
+    private void angleCorrector(double speed, float targetAngle) {
+        float currentAngle = imu.getAngle();
+        float angleDifference = currentAngle - targetAngle;
+        if (angleDifference < -180) {
+            angleDifference = angleDifference + 360;
+        } else if (angleDifference > 180) {
+            angleDifference = 360 - angleDifference;
+        }
+
+        if (speed > 0D) { //Drive Forward
+            if (angleDifference > 1) { //turn right, reduce the speed on right motors
+                setMotorPowers(speed, speed, speed - 0.2, speed - 0.2);
+            } else if (angleDifference < 1) {//turn left, reduce the speed on left motors
+                setMotorPowers(speed - 0.2, speed - 0.2, speed, speed);
+            } else {
+                setMotorPowers(speed);
+            }
+        } else {
+            if (angleDifference > 1) { //turn right, reduce the speed on left motors
+                setMotorPowers(speed - 0.2, speed - 0.2, speed, speed);
+            } else if (angleDifference < 1) {//turn left, reduce the speed on right motors
+                setMotorPowers(speed, speed, speed - 0.2, speed - 0.2);
+            } else {
+                setMotorPowers(speed);
+            }
+        }
+
     }
 }

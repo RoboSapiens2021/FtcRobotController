@@ -19,10 +19,10 @@ public class MotorConnectionTest extends LinearOpMode {
         DcMotorEx motorRightRear = hardwareMap.get(DcMotorEx.class, Constants.WHEEL_NAME.RIGHT_REAR.name());
         DcMotorEx motorRightFront = hardwareMap.get(DcMotorEx.class, Constants.WHEEL_NAME.RIGHT_FRONT.name());
 
-//        motorLeftFront.setDirection(DcMotor.Direction.REVERSE);
-//        motorLeftRear.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftFront.setDirection(DcMotor.Direction.REVERSE);
+        motorLeftRear.setDirection(DcMotor.Direction.REVERSE);
 //        motorRightRear.setDirection(DcMotor.Direction.REVERSE);
-        motorRightFront.setDirection(DcMotor.Direction.REVERSE);
+//        motorRightFront.setDirection(DcMotor.Direction.REVERSE);
 
         motorLeftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         motorLeftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -42,12 +42,10 @@ public class MotorConnectionTest extends LinearOpMode {
             Utils.sleep(2000);
             motorLeftRear.setPower(0);
 
-            motorRightRear.setDirection(DcMotor.Direction.REVERSE);
             motorRightRear.setPower(MOTOR_POWER);
             Utils.sleep(2000);
             motorRightRear.setPower(0);
 
-//            motorRightFront.setDirection(DcMotor.Direction.REVERSE);
             motorRightFront.setPower(MOTOR_POWER);
             Utils.sleep(2000);
             motorRightFront.setPower(0);

@@ -23,16 +23,20 @@ public final class Constants {
         imu, COLOR_SENSOR, WEBCAM
     }
 
-    /*
-     * Set RUN_USING_ENCODER to true to enable built-in hub velocity control using drive encoders.
-     * Set this flag to false if drive encoders are not present and an alternative localization
-     * method is in use (e.g., tracking wheels).
-     */
-    public static final boolean run_using_encoder = false;
-    public static final boolean camera_live_preview = true;
     public static final boolean use_webcam = true;
     public static final Log.LEVEL logLevel = Log.LEVEL.DEBUG;
     public static final OpenCvPipeline pipeline = new BoxAroundPipeline();
+
+    public static final float COLOR_SENSOR_GAIN = 2;
+
+    public static final float RED_HUE = 0.0F;
+    public static final float BLUE_HUE = 180.0F;
+
+    public static final float RED_SAT = 0.667F;
+    public static final float BLUE_SAT = 0.5F;
+
+    public static final float RED_VALUE = 0.012F;
+    public static final float BLUE_VALUE = 0.008F;
 
     /*
      * These are motor constants that should be listed online for your motors.
@@ -45,14 +49,12 @@ public final class Constants {
      * The values were selected with inches in mind.
      */
     public static final double GEAR_RATIO = 19.2D;// output (wheel) speed / input (motor) speed
-    public static double WHEEL_RADIUS_INCHES = 2; // in
-    public static double TRACK_WIDTH_INCHES = 1; // in
     public static final double WHEEL_DIAMETER_INCHES = 3.77953D;
     public static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_INCHES * Math.PI);
     public static final double INCH_PER_TICK = 1 / TICKS_PER_INCH;
 
-    public static final double DRIVE_SPEED = 0.3D;
-    public static final double TURN_SPEED = 0.5D;
+    public static final double MAX_SPEED = 0.8D;
+    public static final double TURN_SPEED = 0.8D;
     public static final double ZERO_POWER = 0.0D;
 
     /*
