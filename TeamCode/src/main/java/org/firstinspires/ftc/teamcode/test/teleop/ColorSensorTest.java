@@ -1,32 +1,18 @@
 package org.firstinspires.ftc.teamcode.test.teleop;
 
 
-import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_NAME.LEFT_FRONT;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_NAME.LEFT_REAR;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_NAME.RIGHT_FRONT;
-import static org.firstinspires.ftc.teamcode.util.Constants.WHEEL_NAME.RIGHT_REAR;
-
 import android.app.Activity;
 import android.graphics.Color;
 import android.view.View;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.SwitchableLight;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.teamcode.util.Constants;
-import org.firstinspires.ftc.teamcode.util.Logger;
 
 @TeleOp(name = "ColorSensorTest", group = "test")
 public class ColorSensorTest extends LinearOpMode {
@@ -61,9 +47,9 @@ public class ColorSensorTest extends LinearOpMode {
 
             colorSensor.setGain(gain);
 
-            if(gamepad1.x){
+            if (gamepad1.x) {
                 if (colorSensor instanceof SwitchableLight) {
-                    SwitchableLight light = (SwitchableLight)colorSensor;
+                    SwitchableLight light = (SwitchableLight) colorSensor;
                     light.enableLight(!light.isLightOn());
                 }
             }

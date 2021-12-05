@@ -80,12 +80,9 @@ public class Robot {
     }
 
     private InertialMotionUnit configureIMU(HardwareMap hardwareMap) {
-        logger.debug("Initializing IMU");
         BNO055IMU bno055IMU = hardwareMap.get(BNO055IMU.class, Constants.DEVICE_NAME.imu.name());
         InertialMotionUnit imu = new InertialMotionUnit(bno055IMU);
         imu.init();
-        logger.info(imu.getStatus());
-        logger.debug("Initialized IMU");
 
         return imu;
     }
@@ -98,6 +95,7 @@ public class Robot {
         DcMotorEx motorRightFront = hardwareMap.get(DcMotorEx.class, Constants.WHEEL_NAME.RIGHT_FRONT.name());
 
         FourWheelMacanumDrive fourWheelMacanumDrive = new FourWheelMacanumDrive(motorLeftFront, motorLeftRear, motorRightRear, motorRightFront);
+        fourWheelMacanumDrive.setImu(imu);
         fourWheelMacanumDrive.init();
 
         return fourWheelMacanumDrive;

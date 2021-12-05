@@ -53,9 +53,6 @@ public class ImuAccelerationIntegrator implements BNO055IMU.AccelerationIntegrat
         if (linearAcceleration.acquisitionTime != 0) {
             Acceleration accelPrev = acceleration;
             this.acceleration = linearAcceleration;
-            if (parameters.loggingEnabled) {
-                RobotLog.vv(parameters.loggingTag, "dt=%.3fs accel=%s", (acceleration.acquisitionTime - accelPrev.acquisitionTime) * 1e-9, acceleration);
-            }
         }
     }
 

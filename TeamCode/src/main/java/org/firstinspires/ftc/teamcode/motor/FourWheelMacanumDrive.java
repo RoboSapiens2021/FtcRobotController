@@ -1,9 +1,13 @@
 package org.firstinspires.ftc.teamcode.motor;
 
+import static org.firstinspires.ftc.teamcode.util.Constants.COLLISION_THRESHOLD_DELTA_G;
+import static java.lang.Math.abs;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.teamcode.util.Constants;
 import org.firstinspires.ftc.teamcode.util.Log;
 import org.firstinspires.ftc.teamcode.util.Logger;
@@ -23,6 +27,8 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
 
     private List<DcMotorEx> motors;
 
+    private Acceleration prevAcceleration;
+
     public FourWheelMacanumDrive(DcMotorEx motorLeftFront,
                                  DcMotorEx motorLeftRear,
                                  DcMotorEx motorRightRear,
@@ -38,8 +44,8 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
     public void init() {
         setDirection(motorLeftFront, DcMotor.Direction.REVERSE);
         setDirection(motorLeftRear, DcMotor.Direction.REVERSE);
-//        setDirection(motorRightRear, DcMotor.Direction.REVERSE);
-//        setDirection(motorRightFront, DcMotor.Direction.REVERSE);
+        setDirection(motorRightRear, DcMotor.Direction.FORWARD);
+        setDirection(motorRightFront, DcMotor.Direction.FORWARD);
 
         for (DcMotorEx motor : motors) {
             //Motor encoders are set to 0.85 by default for safety
@@ -58,6 +64,7 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
 
         }
 
+        prevAcceleration = imu.getLinearAcceleration();
     }
 
 
@@ -121,6 +128,40 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
      * @param speed + to drive forward and - to drive backward
      * @param time
      */
+    public void driveStraight(double speed, long time) {
+        float targetAngle = imu.getAngle();
+        long startTime = System.currentTimeMillis();
+        boolean collisionDetected = false;
+
+        while (isOpModeActive()
+//                && !collisionDetected
+                && (System.currentTimeMillis() - startTime) < time) {
+
+            Acceleration currentAcceleration = imu.getLinearAcceleration();
+
+            long timeDiff = System.currentTimeMillis() - startTime;
+            double jerkX = abs(currentAcceleration.xAccel - prevAcceleration.xAccel) / timeDiff;
+            double jerkY = abs(currentAcceleration.yAccel - prevAcceleration.yAccel) / timeDiff;
+            double jerkZ = abs(currentAcceleration.zAccel - prevAcceleration.zAccel) / timeDiff;
+
+            prevAcceleration = currentAcceleration;
+
+            String msg = String.format("jerkX: %.3f jerkY: %.3f jerkZ: %.3f", jerkX, jerkY, jerkZ);
+            System.out.println(msg);
+            LOG.debug(msg);
+
+            if ((jerkX > COLLISION_THRESHOLD_DELTA_G)
+                    || (jerkY > COLLISION_THRESHOLD_DELTA_G)
+//                    || (jerkZ > COLLISION_THRESHOLD_DELTA_G)
+            ) {
+                LOG.warn("collision detected");
+                collisionDetected = true;
+            }
+            angleCorrector(speed,targetAngle);
+        }
+        stopMotors();
+    }
+
     public void strafeStraight(double speed, long time) {
         float targetAngle = imu.getAngle();
         long startTime = System.currentTimeMillis();
@@ -134,26 +175,30 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
                 angleDifference = 360 - angleDifference;
             }
 
-            if (speed > 0D) { //Drive Forward
-                if (angleDifference > 1) { //if the robot is strafing right and needs to turn to the right, reduce the speed of the back motors
-                    setMotorPowers(speed, -speed + 0.2, speed - 0.2, -speed);
-                } else if (angleDifference < 1) {//if the robot is strafing right and needs to turn to the left, reduce the speed of the front motors
-                    setMotorPowers(speed - 0.2, -speed, speed, -speed + 0.2);
+            if (speed > 0D) {//Strafing right
+                if (angleDifference > 1) {//Strafing right and needs to turn right, reduce speed of back motors
+                    //             lFront, lBack,       rBack     , rFront
+                    setMotorPowers(speed, -speed + 0.2, speed - 0.2, -speed);//1,-0.8, 0.8,-1
+                } else if (angleDifference < -1) {//Strafing right and needs to turn left, reduce speed of front motors
+                    setMotorPowers(speed - 0.2, -speed, speed, -speed + 0.2);//0.8,-1,+1, -0.8
                 } else {
-                    setMotorPowers(speed);
+                    setMotorPowers(speed, -speed, speed, -speed);//1,-1,1,-1
                 }
-            } else {
-//                if (angleDifference < -1) {
+            } else {//Strafing left
+                LOG.warn("Code not available");
+                //Negative speed made more smaller by adding to it
+//                if (angleDifference > 1) {//Strafing left and needs to turn left
 //                    setMotorPowers(speed, -speed + 0.2, speed - 0.2, -speed);
-//                } else if (angleDifference < 1) {
+//                } else if (angleDifference < -1) {
 //                    setMotorPowers(speed - 0.2, -speed, speed, -speed + 0.2);
 //                } else {
-//                    setMotorPowers(speed);
+//                    setMotorPowers(speed, -speed, speed, -speed);
 //                }
             }
         }
         stopMotors();
     }
+
 
 //    public void drive(float leftX, float leftY, float rightX) {
 ////        double r = Math.hypot(leftX, leftY);
@@ -189,7 +234,7 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
 
 //        float angle = imu.getAngle();
 
-//        TThe robot angle is not the angle of the robot is facing, It is the angle in which the robot needs to drive relative to its front,
+//        The robot angle is not the angle of the robot is facing, It is the angle in which the robot needs to drive relative to its front,
 //        in order to drive at the field-relative angle specified by the driver
 //        double robotAngle = Math.atan2(leftY, leftX) - Math.toRadians(Utils.cvtDegrees(angle)) - 3 * (Math.PI / 4);
         double robotAngle = Math.atan2(leftY, leftX) - 3 * (Math.PI / 4);
@@ -223,9 +268,10 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
         motorRightFront.setPower(speed);
         motorRightRear.setPower(speed);
 
-        while (imu.getAngle() < degrees && !isStopRequested()) {
+        while (abs(imu.getAngle()) <= abs(degrees) && !isStopRequested()) {
             //Ignore
         }
+
         stopMotors();
     }
 
@@ -275,7 +321,7 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
     }
 
     private void angleCorrector(double speed, float targetAngle) {
-        float currentAngle = imu.getAngle();
+        float currentAngle = imu.getAngle();//IMU angles are positive towards the left
         float angleDifference = currentAngle - targetAngle;
         if (angleDifference < -180) {
             angleDifference = angleDifference + 360;
@@ -283,19 +329,22 @@ public class FourWheelMacanumDrive extends AbstractDriveTrain {
             angleDifference = 360 - angleDifference;
         }
 
+//            Correct if the robot is far to the left or to the right
         if (speed > 0D) { //Drive Forward
-            if (angleDifference > 1) { //turn right, reduce the speed on right motors
-                setMotorPowers(speed, speed, speed - 0.2, speed - 0.2);
-            } else if (angleDifference < 1) {//turn left, reduce the speed on left motors
-                setMotorPowers(speed - 0.2, speed - 0.2, speed, speed);
+            if (angleDifference > 1) {//Positive angle hence robot is far to the left and we need to turn to right
+//                                 lFront, lBack, rBack     , rFront
+                setMotorPowers(speed, speed, speed - 0.2, speed - 0.2);//1,1,0.8,0.8
+            } else if (angleDifference < -1) {//turn to left, subtract from left motors rather than the right
+                setMotorPowers(speed - 0.2, speed - 0.2, speed, speed);//0.8,0.8,1,1
             } else {
                 setMotorPowers(speed);
             }
-        } else {
-            if (angleDifference > 1) { //turn right, reduce the speed on left motors
-                setMotorPowers(speed - 0.2, speed - 0.2, speed, speed);
-            } else if (angleDifference < 1) {//turn left, reduce the speed on right motors
-                setMotorPowers(speed, speed, speed - 0.2, speed - 0.2);
+        } else {//Robot is driving backward
+            //Negative speed made more smaller by adding to it
+            if (angleDifference > 1) {//Needs to turn right, reduce speed of left motors
+                setMotorPowers(speed + 0.2, speed + 0.2, speed, speed);//-1+0.8 , -1+0.2, -1, -1
+            } else if (angleDifference < -1) {//Needs to turn left, reduce speed of right motors
+                setMotorPowers(speed, speed, speed + 0.2, speed + 0.2);//-1, -1, -1+0.2, -1+0.2
             } else {
                 setMotorPowers(speed);
             }

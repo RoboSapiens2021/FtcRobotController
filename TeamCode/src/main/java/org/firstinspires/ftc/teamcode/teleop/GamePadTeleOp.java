@@ -35,12 +35,15 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.motor.FourWheelMacanumDrive;
+import org.firstinspires.ftc.teamcode.util.Log;
+import org.firstinspires.ftc.teamcode.util.Logger;
 
 @TeleOp(name = "GamePadTeleOp", group = "TeleOp")
 /**
  * POV Mode uses left stick to go forward, and right stick to turn
  */
 public class GamePadTeleOp extends LinearOpMode {
+    private static final Log LOG = Logger.getInstance();
 
     @Override
     public void runOpMode() {
@@ -53,17 +56,9 @@ public class GamePadTeleOp extends LinearOpMode {
         FourWheelMacanumDrive driveTrain = robot.getDriveTrain();
         driveTrain.setMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-
         while (opModeIsActive()) {
             driveTrain.fieldDrive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-
-            float triggerDiff = (gamepad1.left_trigger - gamepad1.right_trigger) / 2;
-
-            if (triggerDiff > 0.0F) {
-                Robot.getInstance().getSpinner().spin(triggerDiff);
-            } else {
-                Robot.getInstance().getSpinner().spin(-triggerDiff);
-            }
+            Robot.getInstance().getSpinner().spin((gamepad1.left_trigger - gamepad1.right_trigger) / 2);
 
             if (gamepad1.y) {
                 Robot.getInstance().getImu().resetPosition();

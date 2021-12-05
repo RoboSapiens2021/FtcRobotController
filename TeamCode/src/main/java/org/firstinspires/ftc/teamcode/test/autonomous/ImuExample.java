@@ -21,8 +21,7 @@ public class ImuExample extends LinearOpMode {
 
         driveTrain.drive(1, 2, 2);
         driveTrain.print(1);
-        driveTrain.turn(92, 0.8);
-
+        driveTrain.turn(90, 0.8);
 
     }
 

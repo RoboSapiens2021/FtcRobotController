@@ -53,9 +53,11 @@ public final class Constants {
     public static final double TICKS_PER_INCH = (TICKS_PER_REV * GEAR_RATIO) / (WHEEL_DIAMETER_INCHES * Math.PI);
     public static final double INCH_PER_TICK = 1 / TICKS_PER_INCH;
 
-    public static final double MAX_SPEED = 0.8D;
+    public static final double MAX_SPEED = 1D;
     public static final double TURN_SPEED = 0.8D;
     public static final double ZERO_POWER = 0.0D;
+
+    public static final double COLLISION_THRESHOLD_DELTA_G = 0.004D;
 
     /*
      * These are the feedforward parameters used to model the drive motor behavior. If you are using

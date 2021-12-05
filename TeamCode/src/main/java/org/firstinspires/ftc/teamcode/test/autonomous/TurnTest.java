@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.test.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.motor.FourWheelMacanumDrive;
@@ -20,6 +21,7 @@ public class TurnTest extends LinearOpMode {
         robot.init();
 
         FourWheelMacanumDrive driveTrain = robot.getDriveTrain();
+        driveTrain.setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (isStopRequested()) {
             return;
