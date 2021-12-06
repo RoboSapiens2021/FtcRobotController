@@ -14,10 +14,10 @@ import java.util.BitSet;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Autonomous(name = "Auto4Positions", group = "Autonomous")
-public class Auto4Positions extends LinearOpMode {
+@Autonomous(name = "AutoWithEncoder", group = "Autonomous")
+public class AutoWithEncoder extends LinearOpMode {
     private Logger logger = Logger.getInstance();
-    private static final double SPIN_SPEED = 0.4;
+    private static final double SPIN_SPEED = 0.3;
     private ExecutorService threadPool = Executors.newSingleThreadExecutor();
     private PositionSelectionThread positionSelectionThread = new PositionSelectionThread();
 
@@ -36,30 +36,35 @@ public class Auto4Positions extends LinearOpMode {
         driveTrain.setMotorMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         int angle = 90;
+        int spin_time = 3500;
+        int warehouse_run_time = 1800;
+        int front_back_run_time = 700;
+        int warehouse_back_run_time = 1400;
+
         if (bitSet.get(0)) {//Blue Front - X
 //            driveTrain.turn(angle, 0.3);
-            driveTrain.driveStraight(-0.8, 560);
+            driveTrain.driveStraight(-0.7, front_back_run_time);
 
-            spinner.spin(SPIN_SPEED, 3000);
-            driveTrain.driveStraight(Constants.MAX_SPEED, 2000);
+            spinner.spin(SPIN_SPEED, spin_time);
+            driveTrain.driveStraight(Constants.MAX_SPEED, warehouse_run_time);
         } else if (bitSet.get(1)) {//Red Front - B
 //            driveTrain.turn(-angle, 0.3);
-            driveTrain.driveStraight(-0.8, 560);
+            driveTrain.driveStraight(-0.7, front_back_run_time);
 
-            spinner.spin(SPIN_SPEED, 3000);
-            driveTrain.driveStraight(Constants.MAX_SPEED, 2000);
+            spinner.spin(-SPIN_SPEED, spin_time);
+            driveTrain.driveStraight(Constants.MAX_SPEED, warehouse_run_time);
         } else if (bitSet.get(2)) { //Red Warehouse - A
 //            driveTrain.turn(-angle, 0.3);
-            driveTrain.driveStraight(-0.8, 1200);
+            driveTrain.driveStraight(-0.7, warehouse_back_run_time);
 
-            spinner.spin(SPIN_SPEED, 3000);
-            driveTrain.driveStraight(Constants.MAX_SPEED, 2400);
+            spinner.spin(-SPIN_SPEED, spin_time);
+            driveTrain.driveStraight(Constants.MAX_SPEED, warehouse_run_time);
         } else {//Blue Warehouse - Y
 //            driveTrain.turn(angle, 0.3);
-            driveTrain.driveStraight(-0.8, 1200);
+            driveTrain.driveStraight(-0.7, warehouse_back_run_time);
 
-            spinner.spin(SPIN_SPEED, 3000);
-            driveTrain.driveStraight(Constants.MAX_SPEED, 2400);
+            spinner.spin(SPIN_SPEED, spin_time);
+            driveTrain.driveStraight(Constants.MAX_SPEED, warehouse_run_time);
         }
         positionSelectionThread.stop();
         threadPool.shutdownNow();
@@ -77,6 +82,8 @@ public class Auto4Positions extends LinearOpMode {
             telemetry.addLine("Select B for Red Front");
             telemetry.addLine("Select A for Red Warehouse");
             telemetry.addLine("Select Y for Blue Warehouse");
+            telemetry.update();
+
             while (!stop) {
                 if (gamepad1.x) {
                     logger.debug("Robot start position: Blue Front");
